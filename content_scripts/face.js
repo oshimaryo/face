@@ -23,6 +23,14 @@ const clickImage = (e) => {
   }
 };
 
+
+if(window['browser'] === undefined) {
+  window['browser'] = chrome;
+  window['is_chrome'] = true;
+} else {
+  window['is_chrome'] = false;
+}
+
 const img = document.createElement('img');
 img.classList.add('is-moving');
 img.setAttribute('style', 'display: none; position:absolute; width: 150px; height: auto; z-index: 9999999999999999; cursor: pointer;');

@@ -8,7 +8,8 @@
 
   "icons": {
     "48": "icons/face-48.png",
-    "96": "icons/face-96.png"
+    "96": "icons/face-96.png",
+    "128": "icons/face-128.png"
   },
 
   "content_scripts": [

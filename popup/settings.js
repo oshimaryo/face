@@ -7,15 +7,27 @@ const sendMessage = (content) => {
     file: "/content_scripts/face.js"
   });
 
-  const gettingActiveTab = browser.tabs.query({active: true, currentWindow: true});
-  gettingActiveTab.then((tabs) => {
-    browser.tabs.sendMessage(tabs[0].id, content);
-  });
+  if (window['is_chrome']) {
+    browser.tabs.query(
+      {active: true, currentWindow: true},
+      (tabs) => {browser.tabs.sendMessage(tabs[0].id, content);}
+    );
+  } else {
+    const gettingActiveTab = browser.tabs.query({active: true, currentWindow: true});
+    gettingActiveTab.then((tabs) => {
+      browser.tabs.sendMessage(tabs[0].id, content);
+    });
+  }
+
 }
 
 const saveSetting = (val) => {
-  let setting  = browser.storage.local.set(val);
-  setting.then(null, onError);
+  if (window['is_chrome']) {
+    browser.storage.local.set(val, null);
+  } else {
+    let setting  = browser.storage.local.set(val);
+    setting.then(null, onError);
+  }
 }
 
 const insertImage = (src) => {
@@ -48,26 +60,51 @@ const isValid = (val) => {
   return typeof(val) !== 'undefined' && val !== null && val !== 0;
 }
 
+if(window['browser'] === undefined) {
+  window['browser'] = chrome;
+  window['is_chrome'] = true;
+} else {
+  window['is_chrome'] = false;
+}
+
 
 const isactive_input = document.getElementById('isactive');
 const size_input = document.getElementById('size');
 const image_input = document.getElementById('image-url');
 
 const applySettings = () => {
-  let gettingAllStorageItems = browser.storage.local.get(null);
-  gettingAllStorageItems.then((results) => {
-    const is_active = results['is_active'] || false;
-    const size = results['size'] || 150;
-    // const image = isValid(results['image']) ? results['image'] : browser.extension.getURL('images/face.png');
-    const image = isValid(results['image']) ? results['image'] : 'http://pngimg.com/uploads/face/face_PNG5660.png';
-    isactive_input.checked = is_active;
-    size_input.value = size;
-    image_input.value = image;
-    sendMessage({is_active: is_active});
-    sendMessage({size: size});
-    sendMessage({image: image});
-  });
+  if(window['is_chrome']) {
+    browser.storage.local.get(null, (results) => {
+      console.log(results);
+      const is_active = results['is_active'] || false;
+      const size = results['size'] || 150;
+      // const image = isValid(results['image']) ? results['image'] : browser.extension.getURL('images/face.png');
+      const image = isValid(results['image']) ? results['image'] : 'http://pngimg.com/uploads/face/face_PNG5660.png';
+      isactive_input.checked = is_active;
+      size_input.value = size;
+      image_input.value = image;
+      sendMessage({is_active: is_active});
+      sendMessage({size: size});
+      sendMessage({image: image});
+    });
+  } else {
+    let gettingAllStorageItems = browser.storage.local.get(null);
+    gettingAllStorageItems.then((results) => {
+      console.log(results);
+      const is_active = results['is_active'] || false;
+      const size = results['size'] || 150;
+      // const image = isValid(results['image']) ? results['image'] : browser.extension.getURL('images/face.png');
+      const image = isValid(results['image']) ? results['image'] : 'http://pngimg.com/uploads/face/face_PNG5660.png';
+      isactive_input.checked = is_active;
+      size_input.value = size;
+      image_input.value = image;
+      sendMessage({is_active: is_active});
+      sendMessage({size: size});
+      sendMessage({image: image});
+    });
+  }
 }
+
 
 const init = () => {
   isactive_input.addEventListener('change', toggleIsActive);

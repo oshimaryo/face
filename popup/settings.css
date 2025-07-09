@@ -27,7 +27,7 @@ ul {
 
 .option {
   width: 100%;
-  height: 1em;
+  height: auto;
   margin: 0em 0.5em 1em;
   /*text-align: center;*/
 }
@@ -49,5 +49,42 @@ ul {
 }
 
 #image-url {
-  width: 240px;
+  width: 200px;
+}
+
+.image-options {
+  margin-top: 0.5em;
+}
+
+.image-option {
+  margin-bottom: 0.5em;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.image-option input[type="radio"] {
+  margin-right: 0.25em;
+}
+
+.image-option label {
+  min-width: 50px;
+  font-weight: bold;
+}
+
+#image-file {
+  font-size: 14px;
+  width: 170px;
+}
+
+.image-preview {
+  margin-top: 0.5em;
+  text-align: center;
+}
+
+.image-preview img {
+  max-width: 100px;
+  max-height: 100px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }

@@ -17,9 +17,20 @@
       <span>px</span>
     </li>
     <li class='option--image option'>
-      <!-- <input type='file' id='image' name='imagefile'> -->
-      <span>url:</span>
-      <input type="text" id='image-url'>
+      <span>image:</span>
+      <div class='image-options'>
+        <div class='image-option'>
+          <input type='radio' id='use-url' name='image-type' value='url' checked>
+          <label for='use-url'>URL:</label>
+          <input type="text" id='image-url'>
+        </div>
+        <div class='image-option'>
+          <input type='radio' id='use-file' name='image-type' value='file'>
+          <label for='use-file'>ファイル:</label>
+          <input type='file' id='image-file' accept='image/*'>
+        </div>
+      </div>
+      <div id='image-preview' class='image-preview'></div>
     </li>
   </ul>
   <script type='module' src='./settings.js'></script>

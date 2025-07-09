@@ -52,6 +52,7 @@ const changeStatus = (request, sender, sendResponse) => {
   }
   if (isNotNull(request.image)) {
     const url = request.image;
+    const imageType = request.imageType || 'url';
     img.setAttribute('src', url);
   }
 };

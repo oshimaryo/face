@@ -9,6 +9,7 @@ This is a browser extension called "FACE" that adds a movable face image to web 
 ## Key Architecture
 
 ### Extension Structure
+
 - **Content Script** (`src/content-scripts/face.js`): Injected into all web pages to display and control the face image
 - **Popup Interface** (`src/popup/settings.html|js|css`): Settings panel for users to configure the extension
 - **Message Passing**: Communication between popup and content scripts using browser.runtime.onMessage
@@ -21,6 +22,7 @@ This is a browser extension called "FACE" that adds a movable face image to web 
    - Toggle face visibility
    - Adjust face size (pixels)
    - Set custom image URL
+
 4. Settings persist across browser sessions using storage API
 
 ## Development Commands
@@ -44,6 +46,7 @@ npm run preview
 - **Development**: Load from `dist/` folder after running `npm run build`
   - **Firefox**: about:debugging → This Firefox → Load Temporary Add-on → select `dist/manifest.json`
   - **Chrome**: chrome://extensions → Enable Developer Mode → Load unpacked → select `dist` folder
+
 
 ## Browser Compatibility
 

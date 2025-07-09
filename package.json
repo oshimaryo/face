@@ -1,0 +1,23 @@
+{
+  "name": "face-extension",
+  "version": "0.1.0",
+  "description": "Add your face to web page - Chrome Extension",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "vite-plugin-web-extension": "^4.0.0",
+    "@types/chrome": "^0.0.268"
+  },
+  "keywords": [
+    "chrome-extension",
+    "vite",
+    "javascript"
+  ],
+  "author": "oshimaryo",
+  "license": "MIT"
+}

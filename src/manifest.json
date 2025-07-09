@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "FACE",
   "version": "0.1",
   "description": "Add your face to web page",
@@ -13,15 +13,24 @@
       "matches": [
         "*://*/*"
       ],
-      "js": ["content-scripts/face.js"]
+      "js": ["content-scripts/face.js"],
+      "run_at": "document_idle"
     }
   ],
   "permissions": [
+    "storage",
     "activeTab",
-    "storage"
+    "scripting"
   ],
-  "browser_action": {
-    "default_icon": "icons/face-96.png",
+  "host_permissions": [
+    "*://*/*"
+  ],
+  "action": {
+    "default_icon": {
+      "48": "icons/face-48.png",
+      "96": "icons/face-96.png",
+      "128": "icons/face-128.png"
+    },
     "default_title": "FACE",
     "default_popup": "popup/settings.html"
   }

@@ -2,23 +2,15 @@ const onError = (error) => {
   console.log(`Error: ${error}`);
 }
 
-const sendMessage = (content) => {
-  browser.tabs.executeScript(null, {
-    file: "/content-scripts/face.js"
-  });
-
-  if (window['is_chrome']) {
-    browser.tabs.query(
-      {active: true, currentWindow: true},
-      (tabs) => {browser.tabs.sendMessage(tabs[0].id, content);}
-    );
-  } else {
-    const gettingActiveTab = browser.tabs.query({active: true, currentWindow: true});
-    gettingActiveTab.then((tabs) => {
-      browser.tabs.sendMessage(tabs[0].id, content);
-    });
+const sendMessage = async (content) => {
+  try {
+    const [tab] = await browser.tabs.query({active: true, currentWindow: true});
+    if (tab && tab.id) {
+      await browser.tabs.sendMessage(tab.id, content);
+    }
+  } catch (error) {
+    console.error('Error sending message:', error);
   }
-
 }
 
 const saveSetting = (val) => {

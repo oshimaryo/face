@@ -2,21 +2,15 @@ import { defineConfig } from 'vite'
 import webExtension from 'vite-plugin-web-extension'
 
 export default defineConfig({
+  root: 'src',
+  publicDir: '../public',
   plugins: [
     webExtension({
-      manifest: './src/manifest.json',
-      additionalInputs: [
-        'src/popup/settings.html'
-      ]
+      manifest: 'manifest.json'
     })
   ],
   build: {
-    outDir: 'dist',
-    rollupOptions: {
-      input: {
-        'content-scripts/face': 'src/content-scripts/face.js',
-        'popup/settings': 'src/popup/settings.js'
-      }
-    }
+    outDir: '../dist',
+    emptyOutDir: true
   }
 })

@@ -77,13 +77,26 @@ const handleFileSelect = (e) => {
   if (!file) return;
   
   if (!file.type.startsWith('image/')) {
-    alert('画像ファイルを選択してください。');
+    alert('Please select an image file.');
+    e.target.value = '';
     return;
   }
+  
+  // File size validation (500KB limit)
+  const MAX_FILE_SIZE = 500 * 1024; // 500KB
+  if (file.size > MAX_FILE_SIZE) {
+    alert('File size must be less than 500KB');
+    e.target.value = '';
+    return;
+  }
+  
+  // Show loading state
+  showLoadingState();
   
   const reader = new FileReader();
   reader.onload = (event) => {
     const base64Data = event.target.result;
+    hideLoadingState();
     showImagePreview(base64Data);
     
     const imageData = {
@@ -95,11 +108,19 @@ const handleFileSelect = (e) => {
     saveSetting(imageData);
   };
   
+  reader.onerror = () => {
+    hideLoadingState();
+    alert('Failed to read the file. Please try again.');
+    e.target.value = '';
+  };
+  
   reader.readAsDataURL(file);
 };
 
 const showImagePreview = (src) => {
   const preview = document.getElementById('image-preview');
+  if (!preview) return;
+  
   preview.innerHTML = '';
   
   const img = document.createElement('img');
@@ -111,6 +132,19 @@ const showImagePreview = (src) => {
 
 const clearImagePreview = () => {
   const preview = document.getElementById('image-preview');
+  if (!preview) return;
+  preview.innerHTML = '';
+};
+
+const showLoadingState = () => {
+  const preview = document.getElementById('image-preview');
+  if (!preview) return;
+  preview.innerHTML = '<div style="color: #666; font-style: italic;">Loading...</div>';
+};
+
+const hideLoadingState = () => {
+  const preview = document.getElementById('image-preview');
+  if (!preview) return;
   preview.innerHTML = '';
 };
 
@@ -134,76 +168,51 @@ const use_url_radio = document.getElementById('use-url');
 const use_file_radio = document.getElementById('use-file');
 
 const applySettings = () => {
+  const processResults = (results) => {
+    console.log(results);
+    const is_active = results['is_active'] || false;
+    const size = results['size'] || 150;
+    const image = isValid(results['image']) ? results['image'] : 'http://pngimg.com/uploads/face/face_PNG5660.png';
+    const imageType = results['imageType'] || 'url';
+    
+    isactive_input.checked = is_active;
+    size_input.value = size;
+    
+    // Set up radio buttons and inputs based on imageType
+    if (imageType === 'file') {
+      use_file_radio.checked = true;
+      image_input.disabled = true;
+      image_file_input.disabled = false;
+      showImagePreview(image);
+    } else {
+      use_url_radio.checked = true;
+      image_input.disabled = false;
+      image_file_input.disabled = true;
+      image_input.value = image;
+      clearImagePreview();
+    }
+    
+    sendMessage({is_active: is_active});
+    sendMessage({size: size});
+    sendMessage({image: image, imageType: imageType});
+  };
+  
   if(window['is_chrome']) {
-    browser.storage.local.get(null, (results) => {
-      console.log(results);
-      const is_active = results['is_active'] || false;
-      const size = results['size'] || 150;
-      const image = isValid(results['image']) ? results['image'] : 'http://pngimg.com/uploads/face/face_PNG5660.png';
-      const imageType = results['imageType'] || 'url';
-      
-      isactive_input.checked = is_active;
-      size_input.value = size;
-      
-      // Set up radio buttons and inputs based on imageType
-      if (imageType === 'file') {
-        use_file_radio.checked = true;
-        image_input.disabled = true;
-        image_file_input.disabled = false;
-        showImagePreview(image);
-      } else {
-        use_url_radio.checked = true;
-        image_input.disabled = false;
-        image_file_input.disabled = true;
-        image_input.value = image;
-        clearImagePreview();
-      }
-      
-      sendMessage({is_active: is_active});
-      sendMessage({size: size});
-      sendMessage({image: image, imageType: imageType});
-    });
+    browser.storage.local.get(null, processResults);
   } else {
-    let gettingAllStorageItems = browser.storage.local.get(null);
-    gettingAllStorageItems.then((results) => {
-      console.log(results);
-      const is_active = results['is_active'] || false;
-      const size = results['size'] || 150;
-      const image = isValid(results['image']) ? results['image'] : 'http://pngimg.com/uploads/face/face_PNG5660.png';
-      const imageType = results['imageType'] || 'url';
-      
-      isactive_input.checked = is_active;
-      size_input.value = size;
-      
-      // Set up radio buttons and inputs based on imageType
-      if (imageType === 'file') {
-        use_file_radio.checked = true;
-        image_input.disabled = true;
-        image_file_input.disabled = false;
-        showImagePreview(image);
-      } else {
-        use_url_radio.checked = true;
-        image_input.disabled = false;
-        image_file_input.disabled = true;
-        image_input.value = image;
-        clearImagePreview();
-      }
-      
-      sendMessage({is_active: is_active});
-      sendMessage({size: size});
-      sendMessage({image: image, imageType: imageType});
-    });
+    browser.storage.local.get(null).then(processResults);
   }
 }
 
 
 const init = () => {
-  isactive_input.addEventListener('change', toggleIsActive);
-  size_input.addEventListener('change', changeSize);
-  image_input.addEventListener('change', changeImage, false);
-  image_file_input.addEventListener('change', handleFileSelect, false);
-  use_url_radio.addEventListener('change', changeImageType);
-  use_file_radio.addEventListener('change', changeImageType);
+  // Add null checks for all DOM elements
+  if (isactive_input) isactive_input.addEventListener('change', toggleIsActive);
+  if (size_input) size_input.addEventListener('change', changeSize);
+  if (image_input) image_input.addEventListener('change', changeImage, false);
+  if (image_file_input) image_file_input.addEventListener('change', handleFileSelect, false);
+  if (use_url_radio) use_url_radio.addEventListener('change', changeImageType);
+  if (use_file_radio) use_file_radio.addEventListener('change', changeImageType);
   applySettings();
 }
 
